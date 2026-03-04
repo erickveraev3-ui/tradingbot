@@ -1,0 +1,58 @@
+nano config/config.yaml
+# ============================================
+# CONFIGURACIÓN BOT TRADING BTC-USDC
+# ============================================
+
+# --- Exchange ---
+exchange:
+  name: "binance"
+  pair: "BTCUSDC"
+  base_asset: "BTC"
+  quote_asset: "USDC"
+  
+# --- Timeframes ---
+timeframe:
+  primary: "1h"           # Timeframe operativo principal
+  data_fetch: "15m"       # Para granularidad de datos (se agregan a 1h)
+
+# --- Trading Parameters ---
+trading:
+  mode: "spot"            # spot o futures
+  long_only: true         # Solo posiciones largas (spot no permite short)
+  position_fraction: 0.50 # Fracción del capital a usar (0.50 = 50%)
+  
+# --- Fees ---
+fees:
+  taker: 0.001            # 0.1% taker fee
+  maker: 0.001            # 0.1% maker fee
+  effective: 0.0008       # Fee efectivo considerando rebates
+
+# --- Model Parameters ---
+model:
+  horizon: 4              # H=4 (predicción a 4 horas)
+  embedding_dim: 768      # Dimensión del embedding capa1
+  
+# --- Gate Parameters ---
+gate:
+  vol_min: 0.0020         # Volatilidad mínima para operar
+  thr_base: 0.0018        # Threshold base para señales
+
+# --- Execution Parameters ---
+execution:
+  cooldown_steps: 3       # Velas de espera entre trades
+  min_hold_steps: 3       # Mínimo de velas manteniendo posición
+  
+# --- Risk Management ---
+risk:
+  max_drawdown: 0.15      # DD máximo permitido (15%)
+  kill_switch: true       # Activar kill-switch si DD > max_drawdown
+
+# --- Paths ---
+paths:
+  data_raw: "data/raw"
+  data_processed: "data/processed"
+  artifacts: "artifacts"
+  logs: "logs"
+
+# --- API Keys (NO SUBIR A GIT - usar .env) ---
+# Las keys se cargan desde variables de entorno
