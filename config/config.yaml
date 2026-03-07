@@ -1,51 +1,80 @@
-nano config/config.yaml
 # ============================================
 # CONFIGURACIÓN BOT TRADING BTC-USDC
 # ============================================
 
-# --- Exchange ---
-exchange:
+# --- Exchange para DATOS ---
+data_exchange:
   name: "binance"
-  pair: "BTCUSDC"
-  base_asset: "BTC"
-  quote_asset: "USDC"
+  pair: "BTCUSDT"       # Binance tiene más liquidez en USDT
   
+# --- Exchange para TRADING ---
+trading_exchange:
+  name: "mexc"
+  pair: "BTC_USDT"      # Formato MEXC futuros
+  mode: "futures"
+  leverage: 3           # Empezar conservador
+  margin_mode: "isolated"  # Aislado es más seguro que cross
+
 # --- Timeframes ---
 timeframe:
-  primary: "1h"           # Timeframe operativo principal
-  data_fetch: "15m"       # Para granularidad de datos (se agregan a 1h)
+  primary: "4h"         # Tendencia principal
+  entry: "1h"           # Timing de entradas
+  filter: "1d"          # Filtro direccional
 
 # --- Trading Parameters ---
 trading:
-  mode: "spot"            # spot o futures
-  long_only: true         # Solo posiciones largas (spot no permite short)
-  position_fraction: 0.50 # Fracción del capital a usar (0.50 = 50%)
+  long_only: false      # Ahora podemos SHORT
+  position_fraction: 0.30  # 30% del capital por trade (con 3x = 90% exposición)
+  max_positions: 1      # Solo 1 posición a la vez (simple)
   
-# --- Fees ---
+# --- Fees MEXC Futuros ---
 fees:
-  taker: 0.001            # 0.1% taker fee
-  maker: 0.001            # 0.1% maker fee
-  effective: 0.0008       # Fee efectivo considerando rebates
+  maker: 0.0002         # 0.02%
+  taker: 0.0006         # 0.06%
+  effective: 0.0006     # Usamos taker para ser conservadores
 
-# --- Model Parameters ---
-model:
-  horizon: 4              # H=4 (predicción a 4 horas)
-  embedding_dim: 768      # Dimensión del embedding capa1
+# --- Indicadores ---
+indicators:
+  # EMAs
+  ema_fast: 21
+  ema_slow: 55
+  ema_trend: 200
   
-# --- Gate Parameters ---
-gate:
-  vol_min: 0.0020         # Volatilidad mínima para operar
-  thr_base: 0.0018        # Threshold base para señales
+  # RSI
+  rsi_period: 14
+  rsi_overbought: 70
+  rsi_oversold: 30
+  
+  # MACD
+  macd_fast: 12
+  macd_slow: 26
+  macd_signal: 9
+  
+  # ADX (fuerza de tendencia)
+  adx_period: 14
+  adx_threshold: 25     # >25 = tendencia fuerte
+  
+  # Bollinger Bands
+  bb_period: 20
+  bb_std: 2
 
-# --- Execution Parameters ---
-execution:
-  cooldown_steps: 3       # Velas de espera entre trades
-  min_hold_steps: 3       # Mínimo de velas manteniendo posición
+# --- Señales ---
+signals:
+  min_score: 3          # Mínimo 3 indicadores alineados para entrar
   
 # --- Risk Management ---
 risk:
-  max_drawdown: 0.15      # DD máximo permitido (15%)
-  kill_switch: true       # Activar kill-switch si DD > max_drawdown
+  stop_loss_pct: 0.02       # 2% stop loss
+  take_profit_pct: 0.04     # 4% take profit (ratio 1:2)
+  trailing_stop: true
+  trailing_pct: 0.015       # 1.5% trailing
+  max_drawdown: 0.15        # 15% DD máximo → kill switch
+  max_daily_loss: 0.05      # 5% pérdida diaria máxima
+
+# --- Execution ---
+execution:
+  cooldown_minutes: 60      # Mínimo 1 hora entre trades
+  min_hold_minutes: 120     # Mínimo 2 horas en posición
 
 # --- Paths ---
 paths:
@@ -53,6 +82,3 @@ paths:
   data_processed: "data/processed"
   artifacts: "artifacts"
   logs: "logs"
-
-# --- API Keys (NO SUBIR A GIT - usar .env) ---
-# Las keys se cargan desde variables de entorno

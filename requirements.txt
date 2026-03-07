@@ -39,3 +39,6 @@ requests>=2.31.0
 websocket-client>=1.6.0
 
 
+# cd ~/tradingbot
+# source .venv/bin/activateS
+
