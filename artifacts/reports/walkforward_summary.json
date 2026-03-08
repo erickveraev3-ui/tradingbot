@@ -1,0 +1,15 @@
+{
+  "n_folds": 6,
+  "mean_total_return": -0.0001030907335440312,
+  "median_total_return": 0.023082107128545637,
+  "mean_max_drawdown": -0.11431641723643876,
+  "median_max_drawdown": -0.0799222984754486,
+  "mean_sharpe_ratio": 0.21314293846372187,
+  "median_sharpe_ratio": 0.4373387107711601,
+  "positive_return_folds_pct": 0.5,
+  "positive_sharpe_folds_pct": 0.6666666666666666,
+  "mean_n_trades": 219.33333333333334,
+  "mean_pct_time_in_market": 0.09547564608882424,
+  "worst_fold_return": -0.2241568823841189,
+  "best_fold_return": 0.10855109693224141
+}

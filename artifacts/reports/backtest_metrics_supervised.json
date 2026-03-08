@@ -1,0 +1,20 @@
+{
+  "initial_capital": 10000.0,
+  "final_capital": 10563.732974664466,
+  "total_return": 0.05637329746644659,
+  "max_drawdown": -0.023264642629043732,
+  "sharpe_ratio": 1.2167981636746976,
+  "sortino_ratio": 0.22835653580236975,
+  "n_trades": 32,
+  "avg_trade_cost": 0.0010999999999999998,
+  "long_trades": 16,
+  "short_trades": 0,
+  "flat_transitions": 16,
+  "win_rate_bar": 0.007724137931034483,
+  "mean_bar_return": 7.741260780387176e-06,
+  "std_bar_return": 0.000595490940420257,
+  "avg_abs_score": 0.005118788962101499,
+  "pct_time_in_market": 0.013793103448275862,
+  "pct_long": 0.013793103448275862,
+  "pct_short": 0.0
+}
