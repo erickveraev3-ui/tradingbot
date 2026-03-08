@@ -1,0 +1,33 @@
+{
+  "rows_test": 9752,
+  "long": {
+    "candidates": 366,
+    "prob_pass": 244,
+    "margin_pass": 202,
+    "ev_pass": 191,
+    "selected_final": 129,
+    "avg_prob_candidate": 0.601667582988739,
+    "avg_ev_candidate": 0.00016667251950724758,
+    "selection_threshold_ev": 0.002729024182410166,
+    "regime_breakdown": {
+      "trend_up": 0.44808743169398907,
+      "trend_down": 0.3005464480874317,
+      "range": 0.25136612021857924
+    }
+  },
+  "short": {
+    "candidates": 423,
+    "prob_pass": 230,
+    "margin_pass": 12,
+    "ev_pass": 12,
+    "selected_final": 11,
+    "avg_prob_candidate": 0.528908371925354,
+    "avg_ev_candidate": -0.000682314020618813,
+    "selection_threshold_ev": 0.003348642264289975,
+    "regime_breakdown": {
+      "trend_down": 0.5437352245862884,
+      "trend_up": 0.24113475177304963,
+      "range": 0.21513002364066194
+    }
+  }
+}

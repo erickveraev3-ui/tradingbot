@@ -1,0 +1,21 @@
+{
+  "initial_capital": 10000.0,
+  "final_capital": 2689.8427750241276,
+  "total_return": -0.7310157224975873,
+  "max_drawdown": -0.7350535152688532,
+  "sharpe_ratio": -7.570959191191869,
+  "sortino_ratio": -6.222147154374088,
+  "n_trades": 1131,
+  "avg_trade_cost": 0.0010096201916398673,
+  "win_rate_bar": 0.1133434945268117,
+  "mean_bar_return": -0.00017946893042582507,
+  "std_bar_return": 0.002218812034553062,
+  "pct_time_in_market": 0.2543993349036996,
+  "pct_long": 0.13717611195787724,
+  "pct_short": 0.11722322294582237,
+  "avg_abs_position": 0.23759162003716158,
+  "avg_p_long": 0.3411159290823767,
+  "avg_p_short": 0.3613509290566118,
+  "avg_p_breakout": 0.03355674898180451,
+  "avg_p_breakdown": 0.035183114407263565
+}

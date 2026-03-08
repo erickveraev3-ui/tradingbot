@@ -1,0 +1,2 @@
+entry_idx,exit_idx,timestamp_entry,timestamp_exit,direction,prob_long,prob_short,size,gross_ret,net_ret,outcome
+108,39121,2025-01-29 19:00:00,2026-03-07 14:00:00,long,0.8423527479171753,0.20161721110343933,0.583529121875763,0.016036896,0.008074231772366255,tp

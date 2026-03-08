@@ -1,0 +1,12 @@
+{
+  "n_trades": 55,
+  "total_net_ret": 0.1632483212048552,
+  "avg_trade_ret": 0.0029681512946337306,
+  "win_rate": 0.6545454545454545,
+  "long_trades": 29,
+  "short_trades": 26,
+  "long_total_ret": 0.06943666481999909,
+  "short_total_ret": 0.0938116563848561,
+  "avg_prob_long_trades": 0.8732229512313316,
+  "avg_prob_short_trades": 0.8136880604120401
+}

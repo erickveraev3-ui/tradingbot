@@ -1,0 +1,16 @@
+{
+  "initial_capital": 10000.0,
+  "final_capital": 11754.383198995398,
+  "total_return": 0.17543831989953973,
+  "max_drawdown": -0.02042494456413571,
+  "sharpe_ratio": 2.771241574959439,
+  "sortino_ratio": 0.6557485532803871,
+  "n_trades": 55,
+  "avg_trade_return": 0.002968151294633755,
+  "win_rate_trade": 0.6545454545454545,
+  "long_trades": 29,
+  "short_trades": 26,
+  "avg_size": 0.598390222986865,
+  "avg_ev_long": 0.0034734035423117935,
+  "avg_ev_short": 0.00037468795341469985
+}

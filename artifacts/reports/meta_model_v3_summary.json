@@ -1,0 +1,16 @@
+{
+  "long": {
+    "model_name": "meta_model_long_v3",
+    "rows": 1806,
+    "positive_rate_total": 0.3444075286388397,
+    "positive_rate_train": 0.3434903025627136,
+    "best_val_ap": 0.5638577302284469
+  },
+  "short": {
+    "model_name": "meta_model_short_v3",
+    "rows": 1704,
+    "positive_rate_total": 0.34859153628349304,
+    "positive_rate_train": 0.3484959602355957,
+    "best_val_ap": 0.5238901053518126
+  }
+}
