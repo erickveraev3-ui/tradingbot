@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import argparse
 import sys
 import json
 from pathlib import Path
@@ -193,8 +194,20 @@ def select_regime_ev_trades(df: pd.DataFrame, side: str, top_percent: float, min
 
     return out
 
+def parse_args():
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument("--fee", type=float, default=CONFIG["fee_rate"])
+    parser.add_argument("--slippage", type=float, default=CONFIG["slippage_bps"])
+
+    return parser.parse_args()
+
 
 def main():
+    args = parse_args()
+
+    CONFIG["fee_rate"] = args.fee
+    CONFIG["slippage_bps"] = args.slippage
     logger.info("=" * 80)
     logger.info("BACKTEST META MODEL V6 - REGIME ENGINE")
     logger.info("=" * 80)

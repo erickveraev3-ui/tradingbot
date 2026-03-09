@@ -1,245 +1,346 @@
-# TradingBot — Quantitative Bitcoin Trading System
+# TradingBot — Estado actual del proyecto
 
-Quantitative trading system for Bitcoin designed to emulate professional discretionary trading logic using machine learning, structural market features, and probabilistic trade selection.
+## Resumen ejecutivo
 
-The system combines:
+El proyecto ha evolucionado desde una fase de investigación de señal hacia una fase de **arquitectura pre-live**.
 
-- pattern detection
-- swing structure analysis
-- meta-labeling models
-- expected value filtering
-- regime detection
-- systematic backtesting
+La conclusión principal hasta este punto es:
 
-The goal is not to predict price directly but to **identify high-probability trading setups** similar to those used by professional traders.
+- el sistema válido y congelado trabaja en **BTC 1H**;
+- el **champion oficial** ya no es solo una señal, sino una arquitectura compuesta por:
+  - **primary layer** (motor principal de alpha),
+  - **secondary layer** (capa secundaria para densificar actividad),
+  - **sizer v2** (gestión de tamaño diferenciada por fuente y régimen),
+  - **reason codes / heartbeat / replay** para observabilidad completa;
+- el motor unificado oficial actual es:
+  - `scripts/30_champion_prelive_engine.py`
 
----
-
-# Strategy Philosophy
-
-Most trading bots attempt to predict the next price movement.
-
-This system takes a different approach:
-
-1. Detect potential **market setups**
-2. Estimate **probability of success**
-3. Estimate **expected value**
-4. Filter trades using **market regime**
-5. Execute only **high-quality trades**
-
-This architecture is inspired by quantitative trading approaches used in professional trading desks.
+La rama 15m quedó como experimento y no pasó la validación con contexto real. La línea viva del proyecto es **1H**.
 
 ---
 
-# Core Concepts
+## Estado validado del sistema
 
-The bot combines several trading ideas:
+### Champion oficial congelado
 
-### Market Structure
-Detection of structural price behaviour:
+El script oficial actual es:
 
-- swing highs
-- swing lows
-- break of structure
-- double tops
-- double bottoms
+- `scripts/30_champion_prelive_engine.py`
 
-### Pattern Engine
-Detection of repeatable patterns used by traders.
+Integra:
 
-### Meta-Labeling
-Separate machine learning models evaluate:
+- **primary**: core alpha congelado
+- **secondary**: capa secundaria subordinada
+- **sizer_v2**: tamaño distinto para primary y secondary
+- **reason codes**: explicación de por qué opera o no opera
+- **replay**: validación acelerada barra a barra
+- **logs persistentes**: trazas, trades simulados, equity, summary
 
-- probability of long trade success
-- probability of short trade success
+### Resultado de verificación del unificado
 
-### Expected Value Engine
-Trades are only taken when the **expected value is positive**.
+El script unificado reproduce correctamente la versión buena ya validada.
 
-### Market Regime Engine
-The system adapts behaviour based on market conditions:
+#### Últimas 1000 barras
 
-- `trend_up`
-- `trend_down`
-- `range`
+- `total_return ≈ +0.4928%`
+- `n_trades = 14`
+- `primary_trades = 7`
+- `secondary_trades = 7`
+- `avg_primary_size ≈ 0.5843`
+- `avg_secondary_size = 0.15`
 
-### Trade Selection
-Only the highest-ranked setups are executed.
+#### 2024-10-01 a 2024-12-31
+
+- `total_return ≈ +5.1685%`
+- `n_trades = 29`
+- `primary_trades = 9`
+- `secondary_trades = 20`
+- `avg_primary_size ≈ 0.5947`
+- `avg_secondary_size = 0.15`
+
+Interpretación:
+
+- `primary` sigue siendo el motor principal;
+- `secondary` añade actividad sin dominar el riesgo;
+- el sizing v2 deja a la secondary claramente subordinada.
 
 ---
 
-# Repository Structure
+## Aprendizajes clave acumulados
+
+### 1. El edge real está en 1H, no en 15m
+
+Se probó una rama 15m.
+
+Conclusión:
+
+- con hack de contexto parecía prometedora;
+- con contexto real (`BTC + ETH + SOL 15m`) perdió edge;
+- se descarta como línea principal.
+
+### 2. El gran salto vino del candidate engine
+
+Se confirmó que abrir el embudo inicial de forma controlada y dejar la dureza a:
+
+- meta-model,
+- EV,
+- ranking,
+
+mejoró de forma material:
+
+- trades,
+- Sharpe,
+- retorno,
+- estabilidad operativa.
+
+### 3. El champion puro es selectivo y de frecuencia moderada
+
+No es un sistema hiperactivo.
+
+Opera cuando detecta estructura clara. Eso obliga a trabajar mucho la **observabilidad** para evitar volver al escenario antiguo de "parece roto porque no imprime nada".
+
+### 4. La secondary layer sí aporta
+
+La capa secundaria:
+
+- aumenta frecuencia,
+- reduce ventanas muertas,
+- añade retorno agregado,
+- pero gana bastante menos por trade que la primary.
+
+Por eso no debe tener el mismo tamaño ni el mismo peso económico.
+
+### 5. El sizing v2 mejora la arquitectura
+
+El sizing v2 no cambia la señal; mejora la monetización del alpha:
+
+- primary con tamaño grande,
+- secondary con tamaño pequeño,
+- jerarquía clara de capital.
+
+---
+
+## Estructura actual recomendada del repositorio
+
+### Scripts vivos en raíz
+
+Estos son los scripts que deben permanecer como línea principal del proyecto:
+
+- `scripts/01_download_data.py`
+- `scripts/02_build_triple_barrier_dataset.py`
+- `scripts/03_train_meta_label_model_v3.py`
+- `scripts/07_debug_trade_funnel.py`
+- `scripts/08_backtest_meta_model_v6.py`
+- `scripts/09_trade_attribution.py`
+- `scripts/10_walkforward_meta_model_v6.py`
+- `scripts/17_walkforward_frozen_champions.py`
+- `scripts/30_champion_prelive_engine.py`
+
+### Scripts de research / archivo
+
+Estos scripts ya cumplieron su función investigadora y deberían quedar archivados en:
+
+- `scripts/archive_research/`
+
+Incluyen:
+
+- `11_walkforward_dual_long_research.py`
+- `12_walkforward_dual_activity_research.py`
+- `13_walkforward_dual_refine.py`
+- `14_promotion_validation.py`
+- `15_walkforward_dual_short_refine.py`
+- `16_walkforward_dual_long_conflict_refine.py`
+- `18_walkforward_15m_experiment.py`
+- `19_paper_trace_simulator.py`
+- `20_live_replay_engine.py`
+- `21_rolling_replay_scanner.py`
+- `22_secondary_layer_shadow_replay.py`
+- `23_secondary_layer_rolling_scanner.py`
+- `24_trade_source_attribution.py`
+- `25_secondary_layer_sizer_v2.py`
+
+---
+
+## Archivos / artefactos relevantes generados por la fase research
+
+### Reports / summaries útiles
+
+- `artifacts/reports/walkforward_frozen_champions/`
+- `artifacts/reports/rolling_replay_scanner/rolling_summary.csv`
+- `artifacts/reports/secondary_layer_rolling/secondary_rolling_summary.csv`
+- `artifacts/reports/champion_prelive_engine/summary.json`
+- `artifacts/reports/champion_prelive_engine/decision_trace.csv`
+- `artifacts/reports/champion_prelive_engine/simulated_trades.csv`
+- `artifacts/reports/champion_prelive_engine/equity_curve.csv`
+
+### Modelos / scalers esperados
+
+- `artifacts/models/meta_model_long_v3.pt`
+- `artifacts/models/meta_model_short_v3.pt`
+- `artifacts/scalers/meta_model_long_v3_scaler.json`
+- `artifacts/scalers/meta_model_short_v3_scaler.json`
+
+### Dataset principal vivo
+
+- `data/processed/dataset_btc_triple_barrier_1h.csv`
+
+---
+
+## Qué debe verificar el próximo chat al revisar Git
+
+Cuando se revise si lo subido a Git es correcto, hay que comprobar como mínimo:
+
+### 1. Scripts oficiales presentes
+
+Deben existir en `scripts/`:
+
+- `01_download_data.py`
+- `02_build_triple_barrier_dataset.py`
+- `03_train_meta_label_model_v3.py`
+- `07_debug_trade_funnel.py`
+- `08_backtest_meta_model_v6.py`
+- `09_trade_attribution.py`
+- `10_walkforward_meta_model_v6.py`
+- `17_walkforward_frozen_champions.py`
+- `30_champion_prelive_engine.py`
+
+### 2. Research archivado
+
+Deben existir en `scripts/archive_research/` los scripts experimentales 11–25 ya cerrados.
+
+### 3. No usar como operativos los scripts antiguos
+
+Los scripts operativos ya no deben ser:
+
+- `20_live_replay_engine.py`
+- `22_secondary_layer_shadow_replay.py`
+- `25_secondary_layer_sizer_v2.py`
+
+Esos fueron absorbidos por `30_champion_prelive_engine.py`.
+
+### 4. Dataset principal correcto
+
+- `data/processed/dataset_btc_triple_barrier_1h.csv`
+
+### 5. Modelos y scalers presentes
+
+- `artifacts/models/meta_model_long_v3.pt`
+- `artifacts/models/meta_model_short_v3.pt`
+- `artifacts/scalers/meta_model_long_v3_scaler.json`
+- `artifacts/scalers/meta_model_short_v3_scaler.json`
+
+---
+
+## Esquema corto de carpetas/archivos importantes
+
+```text
 tradingbot/
-
-scripts/
-01_download_data.py
-02_build_triple_barrier_dataset.py
-03_train_meta_label_model_v3.py
-07_debug_trade_funnel.py
-08_backtest_meta_model_v6.py
-09_trade_attribution.py
-
-src/
-features/
-    feature_builder.py
-    structure_features.py
-    pattern_engine.py
-
-structure/
-    swing_structure.py
-
-strategy/
-    expected_value_engine.py
-    regime_engine.py
-    setup_ranking.py
-    position_sizer.py
-    
----
-
-# Data Pipeline
-
-The pipeline follows these steps:
-Raw Market Data
-↓
-Feature Engineering
-↓
-Pattern Detection
-↓
-Swing Structure Analysis
-↓
-Triple Barrier Labeling
-↓
-Meta-Label Model Training
-↓
-Expected Value Calculation
-↓
-Regime Filtering
-↓
-Trade Selection
-↓
-Backtesting
+├── data/
+│   ├── raw/
+│   └── processed/
+│       └── dataset_btc_triple_barrier_1h.csv
+├── artifacts/
+│   ├── models/
+│   │   ├── meta_model_long_v3.pt
+│   │   └── meta_model_short_v3.pt
+│   ├── scalers/
+│   │   ├── meta_model_long_v3_scaler.json
+│   │   └── meta_model_short_v3_scaler.json
+│   └── reports/
+│       ├── walkforward_frozen_champions/
+│       ├── rolling_replay_scanner/
+│       ├── secondary_layer_rolling/
+│       └── champion_prelive_engine/
+├── scripts/
+│   ├── 01_download_data.py
+│   ├── 02_build_triple_barrier_dataset.py
+│   ├── 03_train_meta_label_model_v3.py
+│   ├── 07_debug_trade_funnel.py
+│   ├── 08_backtest_meta_model_v6.py
+│   ├── 09_trade_attribution.py
+│   ├── 10_walkforward_meta_model_v6.py
+│   ├── 17_walkforward_frozen_champions.py
+│   ├── 30_champion_prelive_engine.py
+│   └── archive_research/
+│       ├── 11_walkforward_dual_long_research.py
+│       ├── 12_walkforward_dual_activity_research.py
+│       ├── 13_walkforward_dual_refine.py
+│       ├── 14_promotion_validation.py
+│       ├── 15_walkforward_dual_short_refine.py
+│       ├── 16_walkforward_dual_long_conflict_refine.py
+│       ├── 18_walkforward_15m_experiment.py
+│       ├── 19_paper_trace_simulator.py
+│       ├── 20_live_replay_engine.py
+│       ├── 21_rolling_replay_scanner.py
+│       ├── 22_secondary_layer_shadow_replay.py
+│       ├── 23_secondary_layer_rolling_scanner.py
+│       ├── 24_trade_source_attribution.py
+│       └── 25_secondary_layer_sizer_v2.py
+└── src/
+    ├── features/
+    ├── strategy/
+    └── structure/
+```
 
 ---
 
-# Dataset
+## Qué se ha hecho hasta ahora
 
-Example dataset characteristics:
+### Research / validación completada
 
-- ~48,700 rows
-- ~160+ engineered features
-- candidate trades:
-candidate_long ≈ 3.7%
-candidate_short ≈ 3.5%
+- limpieza de la arquitectura viva del bot
+- validación del pipeline principal 1H
+- corrección de bugs históricos serios
+- mejora del candidate engine
+- validación por backtest
+- validación por walk-forward
+- rolling scanner del champion
+- replay engine con heartbeat y reason codes
+- secondary layer en shadow mode
+- attribution por fuente (`primary` vs `secondary`)
+- `sizer_v2` diferenciando tamaño entre capas
+- unificación del champion en `30_champion_prelive_engine.py`
 
+### Conclusión de research
 
-Triple barrier outcomes:
-tb_long_win ≈ 1.28%
-tb_short_win ≈ 1.22%
+La arquitectura válida actual es:
 
-
----
-
-# Current Backtest Results
-
-Example results from `meta_model_v6`:
-Initial capital: 10000
-Final capital: 11754
-Total return: +17.5%
-
-Sharpe ratio: 2.77
-Max drawdown: -2.04%
-
-Trades: 55
-Win rate: 65%
-Long trades: 29
-Short trades: 26
-
-Trade attribution shows that the system performs best during:
-trend_down regimes
-
-and high expected-value setups.
+- **primary layer** = core alpha
+- **secondary layer** = densidad operativa
+- **sizer_v2** = monetización disciplinada del alpha
 
 ---
 
-# Installation
+## Próximo paso acordado
 
-Clone the repository:
+El siguiente chat debe continuar con:
 
-```bash
-git clone https://github.com/erickveraev3-ui/tradingbot.git
-cd tradingbot
-Create virtual environment:
-python -m venv .venv
-source .venv/bin/activate
-Install dependencies:
-pip install -r requirements.txt
+# **paper trading / pre-live operativo**
 
-Running the Pipeline
-1 Download data
-python scripts/01_download_data.py
-2 Build dataset
-python scripts/02_build_triple_barrier_dataset.py
-3 Train models
-python scripts/03_train_meta_label_model_v3.py
-4 Debug trade funnel
-python scripts/07_debug_trade_funnel.py
-5 Backtest strategy
-python scripts/08_backtest_meta_model_v6.py
-6 Trade attribution analysis
-python scripts/09_trade_attribution.py
-Strategy Components
-Swing Structure Engine
+La prioridad ya no es mejorar señal, sino convertir el motor actual en un modo paper operativo real.
 
-Provides structural market understanding:
+### Objetivo del siguiente paso
 
-swing highs
+Usar `scripts/30_champion_prelive_engine.py` como base para:
 
-swing lows
+- procesar velas cerradas nuevas
+- ejecutar lógica champion + secondary + sizing v2
+- imprimir heartbeat por vela
+- dejar trazas completas persistentes
+- mantener estado entre ejecuciones
+- validar comportamiento paper casi real
 
-breakout detection
+### Qué se deberá verificar en el próximo chat
 
-double tops / bottoms
+1. que los archivos subidos a Git son los correctos;
+2. que el repositorio quedó limpio;
+3. que `30_champion_prelive_engine.py` es el punto de entrada oficial;
+4. que la fase siguiente ya es paper/pre-live y no más research de señal.
 
-This allows the model to capture chart patterns used by discretionary traders.
-Meta-Label Models
+---
 
-Two independent models:
+## Nota final
 
-meta_model_long
-meta_model_short
+El proyecto ya no está en fase de “buscar una idea bonita”. Está en fase de **convertir un alpha validado en una máquina ejecutable y observable**.
 
-Each estimates the probability that a candidate setup will be profitable.
-
-Expected Value Engine
-
-Trades are only executed when:
-
-Expected Value > threshold
-
-This prevents the model from trading low-quality setups.
-Current Development Stage
-
-The system currently operates in the research and validation phase.
-
-Next development steps include:
-
-walk-forward validation
-
-robustness testing
-
-stress testing with slippage and fees
-
-paper trading
-
-Disclaimer
-
-This project is for research and educational purposes.
-
-Trading cryptocurrencies involves substantial risk.
-
-No financial advice is provided.
-
-Author
-
-Erick Vera
-AI & Quantitative Trading Research
+Ese cambio de fase es el hito principal alcanzado hasta ahora.

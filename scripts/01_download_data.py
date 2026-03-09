@@ -55,9 +55,8 @@ def main():
     client = BinanceDataClient()
 
     # =========================
-    # DATOS PRINCIPALES DEL NUEVO BOT
+    # DATOS 1H
     # =========================
-    # Usaremos BTC como target y ETH/SOL como contexto exógeno
     symbols_1h = ["BTCUSDT", "ETHUSDT", "SOLUSDT"]
 
     for symbol in symbols_1h:
@@ -70,9 +69,22 @@ def main():
         )
 
     # =========================
+    # DATOS 15M
+    # =========================
+    symbols_15m = ["BTCUSDT", "ETHUSDT", "SOLUSDT"]
+
+    for symbol in symbols_15m:
+        download_symbol_interval(
+            client=client,
+            symbol=symbol,
+            interval="15m",
+            start_date="1 Jan 2020",
+            output_dir=RAW_DIR,
+        )
+
+    # =========================
     # BTC 4H opcional
     # =========================
-    # Lo dejo porque puede venir bien para análisis/regímenes/backtests comparativos.
     download_symbol_interval(
         client=client,
         symbol="BTCUSDT",
@@ -88,6 +100,9 @@ def main():
     print("  - btcusdt_1h.csv")
     print("  - ethusdt_1h.csv")
     print("  - solusdt_1h.csv")
+    print("  - btcusdt_15m.csv")
+    print("  - ethusdt_15m.csv")
+    print("  - solusdt_15m.csv")
     print("  - btcusdt_4h.csv")
 
 
